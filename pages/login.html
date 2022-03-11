@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Longin form</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="cookie.js"></script>
+
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="col-lg-6" id="body">
+        <div style="width: 400px;height: 300px;background-color: aquamarine;margin: auto;text-align: center;">
+            <div class="col-lg-6"></div>
+            <h1>Login</h1><br><br><br>
+
+            <label for="">Email</label>
+            <input type="text" id="email"><br><br>
+            <label for="">Password</label>
+            <input type="password" id="password">
+            <input type="checkbox" onclick="myFunction()"><br><br>
+            <button onclick="login()">Login</button>
+
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-6">
+        <div style="width: 400px;height: 350px;background-color: rgb(255, 127, 234);margin: auto;text-align: center;">
+
+            <h1>Registration From</h1><br><br>
+
+            <label for="">Name</label>
+            <input type="text" id="name"><br><br>
+            <label for="">Email</label>
+            <input type="text" id="rgsemail"><br><br>
+            <label for="">Password</label>
+            <input type="password" id="rgspassword">
+            <input type="checkbox" onclick="myFunction()"><br><br>
+            <label for="">Conform Password</label>
+            <input type="password" id="rgscpassword"><br><br>
+            <button onclick="registrarion()">Registration</button>
+
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+        function login() {
+            var em = document.getElementById('email').value.trim();
+            var pattern = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+            if (em == "") {
+                alert("Please enter Emailid");
+                return;
+            }
+
+            if (pattern.test(em) == false) {
+                alert("Please enter valid email");
+                return;
+            }
+
+            document.getElementById('password').innerHTML = "";
+            var prd = document.getElementById('password').value.trim();
+            var patpass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/;
+            if (prd == "") {
+                alert("Please enter password");
+                return;
+            }
+
+            if (patpass.test(prd) == false) {
+                alert("Please enter strongest password");
+                return;
+            }
+
+
+
+            let email = $("#email").val();
+            let password = $("#password").val();
+            let data = {
+                data: {
+                    email: email,
+                    password: password
+                }
+            }
+
+
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8081/login',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
+                    if (result.status == "success") {
+                        setcookie("usertype", "user");
+                        setcookie("userid", result.data[0].id);
+                        setcookie("username", result.data[0].name);
+                        window.location.replace("http://localhost:8081/user");
+                    }
+                    else {
+                        alert("Wrong credentials");
+                    }
+                },
+
+                error: function (err) {
+                    console.log(err);
+                }
+
+            });
+        }
+
+        function registrarion() {
+            var emy = document.getElementById('rgsemail').value.trim();
+            var pattern = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+            if (emy == "") {
+                alert("Please enter Emailid");
+                return;
+            }
+
+            if (pattern.test(emy) == false) {
+                alert("Please enter valid email");
+                return;
+            }
+
+            document.getElementById('rgspassword').innerHTML = "";
+            var pass = document.getElementById('rgspassword').value.trim();
+            var patpass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/;
+            if (pass == "") {
+                alert("Please enter password");
+                return;
+            }
+
+            if (patpass.test(pass) == false) {
+                alert("Please enter strongest password");
+                return;
+            }
+
+
+            var con = document.getElementById('rgscpassword').value;
+            if (con == "") {
+                alert("Please confirm Password");
+                return;
+            }
+
+            if (con == pass) {
+                alert('Your password is right');
+                return;
+            }
+            else {
+                alert("Please check");
+                return;
+            }
+            let name = $("#name").val()
+            let email = $("#rgsemail").val();
+            let password = $("#rgspassword").val();
+            let conpassword = $("#rgscpassword").val();
+            let data = {
+                data: {
+                    name: name,
+                    email: email,
+                    password: password
+                }
+            }
+
+
+
+
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8081/register',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
+                    if (result.data.status == "success") {
+                        setcookie("usertype", "user");
+                        setcookie("userid", result.data.id);
+                        setcookie("username", name);
+                        window.location.replace("http://localhost:8081/user");
+                    }
+                    else {
+                        alert("Email already exists");
+                    }
+                },
+
+                error: function (err) {
+                    console.log(err);
+                }
+
+            });
+
+        }
+
+        function myFunction() {
+                var x = document.getElementById("rgspassword");
+                if (x.type === "password") {
+                    x.type = "text";
+                } else {
+                    x.type = "password";
+                }
+        }
+
+        function myFunction() {
+                var x = document.getElementById("password");
+                if (x.type === "password") {
+                    x.type = "text";
+                } else {
+                    x.type = "password";
+                }
+            }
+
+    </script>
+</body>
+
+</html>
