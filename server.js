@@ -18,6 +18,12 @@ app.get("/", function (req, res) {
     
 });
 
+
+app.get("/", function (req, res) {
+    res.sendFile(__dirname + "/pages/user.html");
+    
+});
+
 app.post("/register", async (req, res) => {
     let body = req.body;
     let user = new User.User();
